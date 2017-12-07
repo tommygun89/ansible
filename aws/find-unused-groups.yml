@@ -1,0 +1,26 @@
+---
+
+- name: "Gather all security groups for service {{ service }}"
+  ec2_group_facts:
+    filters:
+      "tag:Team": "{{ team }}"
+      "tag:Service": "{{ service }}"
+  register: all_sgs
+
+- name: "Find and save all security groups"
+  set_fact: all_sg_ids={{ lookup('flattened', all_sgs|json_query('security_groups[*].group_id')).split(',') }}
+
+- name: "Gather security groups for EC2 instances for service {{ service }}"
+  ec2_instance_facts:
+    filters:
+      "tag:Team": "{{ team }}"
+      "tag:Service": "{{ service }}"
+  register: ec2_instances
+
+- name: "Find and save all EC2 security groups"
+  set_fact: ec2_sgs={{ lookup('flattened', ec2_instances|json_query('instances[*].security_groups[*].group_id')).split(',') }}
+
+- name: "Find and save all unused groups"
+  set_fact: unused_sg_ids={{ all_sg_ids|difference(ec2_sgs) }}
+
+...

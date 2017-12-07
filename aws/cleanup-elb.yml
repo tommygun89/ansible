@@ -1,0 +1,9 @@
+---
+# WIP
+- name: Find ELBs based on unused groups
+  ec2_group_facts:
+  register: elbs
+
+- debug: msg={{ elbs }}
+
+...

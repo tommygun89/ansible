@@ -1,0 +1,12 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  #- include: cleanup-elb.yml # TODO Find way to clean up ELBs with 0 instances
+  #- include: cleanup-asg.yml
+  - include: find-unused-groups.yml
+  - include: delete-unused-groups.yml
+
+...
