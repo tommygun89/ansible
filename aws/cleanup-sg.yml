@@ -23,4 +23,11 @@
 - name: "Find and save all unused groups"
   set_fact: unused_sg_ids={{ all_sg_ids|difference(ec2_sgs) }}
 
+- name: "Delete all unused groups"
+  ec2_group:
+    group_id: "{{ item }}"
+    state: absent
+  with_items: "{{ unused_sg_ids }}"
+  when: unused_sg_ids|length > 0
+
 ...

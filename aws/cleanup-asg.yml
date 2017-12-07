@@ -1,0 +1,25 @@
+---
+
+- name: "Gather facts on auto scaling groups"
+  ec2_asg_facts:
+    tags:
+      Team: "{{ team }}"
+      Service: "{{ service }}"
+  register: asgs
+
+- name: "Delete auto scaling groups excluding version {{ version }}"
+  ec2_asg:
+    region: "{{ region }}"
+    name: "{{ item.auto_scaling_group_name }}"
+    state: absent
+  with_items: "{{ asgs.results }}"
+  when: '"{{ version }}" in "item.auto_scaling_group_name"'
+
+- name: "Delete launch configurations excluding version {{ version }}"
+  ec2_lc:
+    name: "{{ item.launch_configuration_name }}"
+    state: absent
+  with_items: "{{ asgs.results }}"
+  when: '"{{ version }}" in "item.auto_scaling_group_name"'
+
+...
